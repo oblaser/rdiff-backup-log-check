@@ -1,0 +1,18 @@
+{
+    "editor.formatOnSave": true,
+
+    // see infos at https://marketplace.visualstudio.com/items?itemName=xaver.clang-format
+    "clang-format.style": "file",
+    "clang-format.fallbackStyle": "none",
+    "clang-format.formatOnSave": false,
+    "clang-format.formatOnType": false,
+    "clang-format.arguments": [ "-assume-filename=${workspaceFolder}/.clang-format" ],
+
+    "files.associations": {
+        "*.pjob": "shellscript",
+        "potorooJob*": "shellscript",
+        "*.hts": "xml",
+        "*.h": "c",
+        "iostream": "cpp"
+    }
+}
