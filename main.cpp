@@ -15,6 +15,10 @@ copyright       GPL-3.0 - Copyright (c) 2025 Oliver Blaser
 
 #include "project.h"
 
+#ifdef _WIN32
+#include <Windows.h>
+#endif
+
 
 
 // ANSI escape codes
@@ -94,6 +98,37 @@ void printVersion()
 
 
 
+#ifdef _WIN32
+
+namespace omw::windows {
+
+bool consoleEnVirtualTermProc()
+{
+    bool r = false;
+
+    HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    if (handle != INVALID_HANDLE_VALUE)
+    {
+        DWORD mode = 0;
+
+        if (GetConsoleMode(handle, &mode))
+        {
+            mode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+
+            if (SetConsoleMode(handle, mode)) r = true;
+        }
+    }
+
+    return r;
+}
+
+} // namespace omw::windows
+
+#endif
+
+
+
 static int process(std::ifstream& ifs);
 static bool isLineOfInterest(const std::string& str);
 static std::string iostateToString(std::ios& ios);
@@ -102,6 +137,10 @@ static std::string iostateToString(std::ios& ios);
 
 int main(int argc, char** argv)
 {
+#ifdef _WIN32
+    omw::windows::consoleEnVirtualTermProc();
+#endif
+
     for (int i = 0; i < argc; ++i)
     {
         if (std::strcmp(argv[i], "--help") == 0)
