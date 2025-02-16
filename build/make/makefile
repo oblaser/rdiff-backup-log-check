@@ -32,8 +32,8 @@ LIB_PATH=$(prefix)/lib
 $(EXE): $(OBJS)
 	$(LINK) $(LFLAGS) -o $(EXE) $(OBJS)
 
-main.o: ../main.cpp ../project.h
-	$(CC) $(CFLAGS) ../main.cpp
+main.o: ../../main.cpp ../../project.h
+	$(CC) $(CFLAGS) ../../main.cpp
 
 all: $(EXE)
 	
