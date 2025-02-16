@@ -28,7 +28,7 @@ const char* const exeName = "rdiff-backup-log-check"; // eq to the linker settin
 const char* const website = "https://github.com/oblaser/rdiff-backup-log-check";
 
 // const omw::Version version(0, 1, 0, "alpha");
-const char* const version = "0.1.0";
+const char* const version = "0.1.1-alpha";
 
 } // namespace prj
 

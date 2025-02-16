@@ -211,7 +211,15 @@ int process(std::ifstream& ifs)
 
 bool isLineOfInterest(const std::string& str)
 {
-    const std::array<std::string, 4> okLineBegin = { "* Processing file ", "* Processing changed file ", "* Incrementing mirror file ", "* Cleaning up" };
+    // clang-format off
+    const std::array<std::string, 5> okLineBegin = {
+        "* Processing file ",
+        "* Processing changed file ",
+        "* Incrementing mirror file ",
+        "* Regressing file ",
+        "* Cleaning up"
+    };
+    // clang-format on
 
     bool isLoi = true;
 
