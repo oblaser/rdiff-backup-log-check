@@ -4,10 +4,12 @@ date            15.02.2025
 copyright       GPL-3.0 - Copyright (c) 2025 Oliver Blaser
 */
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <string>
 
@@ -92,6 +94,12 @@ void printVersion()
 
 
 
+static int process(std::ifstream& ifs);
+static bool isLineOfInterest(const std::string& str);
+static std::string iostateToString(std::ios& ios);
+
+
+
 int main(int argc, char** argv)
 {
     for (int i = 0; i < argc; ++i)
@@ -121,11 +129,28 @@ int main(int argc, char** argv)
 
         if (fs::exists(filePath))
         {
-            cout << "found log file " << filePath << endl;
+            std::ifstream ifs;
 
-            // cout << "\033[33mW\033[39m TODO implement `process()`" <<endl;
-            cout << "\033[31mE\033[39m TODO implement `process()`" << endl;
-            r = 1;
+            try
+            {
+                ifs.exceptions(std::ios::badbit | std::ios::failbit);
+                ifs.open(filePath, std::ios::in);
+
+                ifs.exceptions(std::ios::badbit);
+                r = process(ifs);
+            }
+            catch (const std::exception& ex)
+            {
+                cout << "fatal error: " << ex.what() << iostateToString(ifs) << endl;
+                r = 1;
+            }
+            catch (...)
+            {
+                cout << "unknown fatal error" << iostateToString(ifs) << endl;
+                r = 1;
+            }
+
+            if (ifs.is_open()) { ifs.close(); }
         }
         else
         {
@@ -140,4 +165,75 @@ int main(int argc, char** argv)
     }
 
     return r;
+}
+
+
+
+int process(std::ifstream& ifs)
+{
+    size_t line = 0;
+    bool isConsecutiveLoi = false;
+
+    while (ifs.good())
+    {
+        std::string str;
+        std::getline(ifs, str);
+
+        if (ifs.fail())
+        {
+#if PRJ_DEBUG
+            cout << SGR_FG_BMAGENTA << "break due to fail()" << SGR_FG_DEFAULT << endl;
+#endif // PRJ_DEBUG
+
+            break;
+        }
+
+        if (isLineOfInterest(str))
+        {
+            if (!isConsecutiveLoi && (line > 0)) { cout << endl << SGR_FG_BBLACK << "#" << line << SGR_FG_DEFAULT << endl; }
+
+            cout << str << endl;
+
+            isConsecutiveLoi = true;
+        }
+        else
+        {
+            // if (isConsecutiveLoi) { cout << endl; }
+
+            isConsecutiveLoi = false;
+        }
+
+        ++line;
+    }
+
+    return 0;
+}
+
+bool isLineOfInterest(const std::string& str)
+{
+    const std::array<std::string, 4> okLineBegin = { "* Processing file ", "* Processing changed file ", "* Incrementing mirror file ", "* Cleaning up" };
+
+    bool isLoi = true;
+
+    for (const auto& s : okLineBegin)
+    {
+        if (std::strncmp(str.c_str(), s.c_str(), s.length()) == 0)
+        {
+            isLoi = false;
+            break;
+        }
+    }
+
+    return (isLoi && !str.empty());
+}
+
+std::string iostateToString(std::ios& ios)
+{
+    std::string str = "";
+
+    if (ios.eof()) { str += " EOF"; }
+    if (ios.fail()) { str += " FAIL"; }
+    if (ios.bad()) { str += " BAD"; }
+
+    return str;
 }

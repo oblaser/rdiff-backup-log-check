@@ -1,6 +1,6 @@
 # rdiff-backup log check
 
-Prints and filters the log file for lines not starting with `* Processing file `.
+Prints and filters the log file. Does not analyse the contents or values of statistics of the log file.
 
 
 #### Usage
