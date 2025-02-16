@@ -19,6 +19,15 @@ BUILDDATE = $(shell date +"%Y-%m-%d-%H-%M")
 
 
 
+ifeq ($(prefix),)
+    prefix = /usr/local
+endif
+
+BIN_PATH=$(prefix)/bin
+HEADER_PATH=$(prefix)/include
+LIB_PATH=$(prefix)/lib
+
+
 
 $(EXE): $(OBJS)
 	$(LINK) $(LFLAGS) -o $(EXE) $(OBJS)
@@ -32,3 +41,6 @@ all: $(EXE)
 clean:
 	rm $(OBJS)
 	rm $(EXE)
+
+install: $(EXE)
+	install -m 755 $(EXE) $(BIN_PATH)
